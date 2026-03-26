@@ -19,13 +19,18 @@ inline void print_benchmark(const BatchBenchResult &res) {
   std::cout << std::left << std::setw(35) << res.label << std::right
             << std::setw(10) << res.min << std::setw(10) << res.max
             << std::setw(10) << std::fixed << std::setprecision(1) << res.avg
-            << std::setw(5) << res.iterations << '\n';
+            << '\n';
 }
 
 inline void print_benchmarks(const std::vector<BatchBenchResult> &results) {
-  std::cout << std::left << std::setw(35) << "Benchmark" << std::right
+  if (results.empty())
+    return;
+
+  std::string header =
+      "Benchmark (" + std::to_string(results[0].iterations) + ")";
+  std::cout << std::left << std::setw(35) << header << std::right
             << std::setw(10) << "Min" << std::setw(10) << "Max" << std::setw(10)
-            << "Avg" << std::setw(5) << "N" << '\n';
+            << "Avg" << '\n';
   std::cout << std::string(70, '-') << '\n';
   for (const auto &res : results) {
     print_benchmark(res);

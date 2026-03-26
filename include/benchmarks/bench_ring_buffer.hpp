@@ -10,12 +10,11 @@
 
 namespace {
 template <typename T, std::size_t N, RingBufferPolicies<T> Policies>
-[[nodiscard]] timing::Cycles64 bench_index() noexcept {
+[[nodiscard]] timing::Cycles64 bench_push_test() noexcept {
   static_assert(std::is_default_constructible_v<T>,
-                "T must be constructible for ring buffer index benchmark.");
-  static_assert(
-      std::is_copy_constructible_v<T>,
-      "T must be copy constructible for ring buffer index benchmark.");
+                "T must be constructible for ring buffer push benchmark.");
+  static_assert(std::is_copy_constructible_v<T>,
+                "T must be copy constructible for ring buffer push benchmark.");
 
   const T val{};
   RingBuffer<T, N, Policies> rb;
@@ -38,7 +37,7 @@ template <typename Data_T, std::size_t Buffer_N, std::size_t Tests_N,
   results.reserve(Tests_N);
 
   for (std::size_t i = 0; i < Tests_N; ++i) {
-    results.push_back(bench_index<Data_T, Buffer_N, Policies>());
+    results.push_back(bench_push_test<Data_T, Buffer_N, Policies>());
   }
 
   timing::Cycles64 min{std::numeric_limits<timing::Cycles64>::max()};
