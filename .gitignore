@@ -1,2 +1,6 @@
 build/
 .cache/
+
+# temporary ignore
+api/
+dashboard/
