@@ -7,6 +7,7 @@
 int main() {
   using namespace ull;
   using Timer = timing::BenchmarkTimer<timing::TimingPolicy::CPU>;
+  using Bench = Benchmark<Timer>;
   using Duration = typename Timer::Duration;
 
   // Fallback, prefer taskset -c 0 via 'make run-pinned'
@@ -15,29 +16,35 @@ int main() {
     return 1;
   }
 
-  const Benchmark<Timer> bench;
-  const std::vector<typename Benchmark<Timer>::BenchCase> tests = {
-      {"array + bitmask",
-       benchmarks::ring_buffer::push<int, 1024,
-                                     DefaultRingBufferPolicies<int, 1024>>},
+  sys::check_frequency_governor();
 
-      {"array + modulo",
-       benchmarks::ring_buffer::push<
-           int, 1024,
-           DefaultRingBufferPolicies<int, 1024, ArrayStorage<int, 1024>,
-                                     ModuloIndex<1024>>>},
-  };
+  using Bitmask = DefaultRingBufferPolicies<int, 1024>;
+  using Modulo = DefaultRingBufferPolicies<int, 1024, ArrayStorage<int, 1024>,
+                                           ModuloIndex<1024>>;
 
-  const auto results = bench.run(tests, 10'000);
+  auto bitmask_tests =
+      benchmarks::ring_buffer::make_ring_buffer_suite<int, 1024, Bitmask>(
+          "array + bitmask");
+  auto modulo_tests =
+      benchmarks::ring_buffer::make_ring_buffer_suite<int, 1024, Modulo>(
+          "array + modulo");
 
-  // Display results
+  std::vector<BenchCase> all;
+  all.insert(all.end(), std::make_move_iterator(bitmask_tests.begin()),
+             std::make_move_iterator(bitmask_tests.end()));
+  all.insert(all.end(), std::make_move_iterator(modulo_tests.begin()),
+             std::make_move_iterator(modulo_tests.end()));
+
+  Bench bench;
+  const auto results = bench.run(all, 10'000);
+
   for (const auto &result : results) {
     Duration total = 0;
     for (auto sample : result.results)
       total += sample;
 
     Duration mean = total / result.results.size();
-    std::printf("%-30s | mean: %lu cycles | samples: %zu\n",
+    std::printf("%-40s | mean: %lu cycles | samples: %zu\n",
                 std::string(result.label).c_str(), mean, result.results.size());
   }
 
