@@ -6,6 +6,8 @@
 #include <optional>
 #include <vector>
 
+namespace ull {
+
 struct Order {
   std::uint64_t id;
   std::int64_t price;
@@ -31,3 +33,5 @@ private:
   std::map<std::int64_t, PriceLevel, std::less<>> asks_;
   std::unordered_map<std::uint64_t, std::int64_t> order_to_price_;
 };
+
+} // namespace ull

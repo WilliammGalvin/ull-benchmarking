@@ -8,6 +8,9 @@
 #include <new>
 #include <type_traits>
 
+namespace ull {
+using namespace policies;
+
 template <typename P, typename T>
 concept RingBufferPolicies = requires {
   typename P::storage;
@@ -99,3 +102,5 @@ private:
   std::size_t head_{};
   std::size_t tail_{};
 };
+
+} // namespace ull

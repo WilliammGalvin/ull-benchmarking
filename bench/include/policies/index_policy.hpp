@@ -3,6 +3,8 @@
 #include <concepts>
 #include <cstddef>
 
+namespace ull::policies {
+
 template <typename P>
 concept IndexPolicy = requires(std::size_t idx) {
   { P::wrap(idx) } noexcept -> std::same_as<std::size_t>;
@@ -31,3 +33,5 @@ template <std::size_t N> struct ModuloIndex {
     return idx % N;
   }
 };
+
+} // namespace ull::policies

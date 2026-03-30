@@ -2,6 +2,8 @@
 
 #include <concepts>
 
+namespace ull::policies {
+
 template <typename P>
 concept OverflowPolicy = requires {
   { P::should_overwrite() } noexcept -> std::same_as<bool>;
@@ -20,3 +22,5 @@ struct RejectPolicy {
 struct OverwritePolicy {
   static constexpr bool should_overwrite() noexcept { return true; }
 };
+
+} // namespace ull::policies

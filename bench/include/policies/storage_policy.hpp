@@ -6,6 +6,8 @@
 #include <deque>
 #include <memory>
 
+namespace ull::policies {
+
 template <typename S, typename T>
 concept StoragePolicy =
     requires(S storage, const S const_storage, std::size_t idx) {
@@ -58,3 +60,5 @@ template <typename T, std::size_t N> struct DequeStorage {
   T &operator[](std::size_t idx) noexcept { return data_[idx]; }
   const T &operator[](std::size_t idx) const noexcept { return data_[idx]; }
 };
+
+} // namespace ull::policies

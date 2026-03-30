@@ -2,6 +2,8 @@
 
 #include <concepts>
 
+namespace ull::policies {
+
 template <typename P>
 concept PrefetchPolicy = requires(const void *addr) {
   { P::prefetch(addr) } noexcept -> std::same_as<void>;
@@ -31,3 +33,5 @@ struct L2Prefetch {
     __builtin_prefetch(addr, 0, 2);
   }
 };
+
+} // namespace ull::policies
