@@ -2,7 +2,7 @@
 
 #include "benchmark.hpp"
 #include "ring_buffer.hpp"
-#include "timing.hpp"
+#include "timing/timing.hpp"
 #include <cstddef>
 #include <cstring>
 #include <memory>
