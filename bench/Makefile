@@ -30,7 +30,7 @@ run-o0: bench-o0
 
 run-pinned: release
 	sudo cpupower frequency-set -g performance
-	taskset -c 0 ./$(RELEASE_DIR)/$(TARGET)
+	taskset -c 0 ./$(RELEASE_DIR)/$(TARGET); \
 	sudo cpupower frequency-set -g powersave
 
 rebuild: clean release

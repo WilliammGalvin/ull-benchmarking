@@ -1,5 +1,6 @@
 #include "benchmark.hpp"
 #include "benchmarks/bench_ring_buffer.hpp"
+#include "sys/cpu.hpp"
 #include <cstdio>
 #include <vector>
 
@@ -7,6 +8,12 @@ int main() {
   using namespace ull;
   using Timer = timing::BenchmarkTimer<timing::TimingPolicy::CPU>;
   using Duration = typename Timer::Duration;
+
+  // Fallback, prefer taskset -c 0 via 'make run-pinned'
+  if (!sys::pin_to_core(0)) {
+    std::fprintf(stderr, "Failed to pin CPU.\n");
+    return 1;
+  }
 
   const Benchmark<Timer> bench;
   const std::vector<typename Benchmark<Timer>::BenchCase> tests = {

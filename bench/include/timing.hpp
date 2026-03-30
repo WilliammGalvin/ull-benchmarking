@@ -44,6 +44,11 @@ __attribute__((always_inline)) inline void do_not_optimize(T &&val) noexcept {
   asm volatile("" : : "g"(val) : "memory");
 }
 
+// Prevents the compiler from reordering memory operations across this barrier
+__attribute__((always_inline)) inline void memory_fence() noexcept {
+  asm volatile("" ::: "memory");
+}
+
 //
 // CPU clock cycle count from CPU. Minimal overhead
 //

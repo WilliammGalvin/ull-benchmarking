@@ -43,9 +43,14 @@ template <timing::Timer T> struct Benchmark {
 
   [[nodiscard]] BatchTestResult<T> run(const std::string &label,
                                        const TestFn &test,
-                                       std::size_t iterations = 1) const {
+                                       std::size_t iterations = 1,
+                                       std::size_t warmup = 100) const {
     if (iterations == 0)
       return BatchTestResult<T>::empty(label);
+
+    // Warmup - prime instruction cache, branch predictor, and TLB
+    for (std::size_t i = 0; i < warmup; ++i)
+      timing::do_not_optimize(test());
 
     const T timer;
     int err_count = 0;
@@ -58,6 +63,9 @@ template <timing::Timer T> struct Benchmark {
       const Duration start = timer.start();
       SingleTestResult res = test();
       const Duration stop = timer.stop();
+
+      timing::do_not_optimize(res);
+      timing::memory_fence();
 
       if (res.error()) {
         ++err_count;
@@ -76,11 +84,11 @@ template <timing::Timer T> struct Benchmark {
   }
 
   [[nodiscard]] std::vector<BatchTestResult<T>>
-  run(const std::span<const BenchCase> tests,
-      std::size_t iterations = 1) const {
+  run(const std::span<const BenchCase> tests, std::size_t iterations = 1,
+      std::size_t warmup = 100) const {
     std::vector<BatchTestResult<T>> results;
     for (const auto &[label, fn] : tests) {
-      results.push_back(run(std::string{label}, fn, iterations));
+      results.push_back(run(std::string{label}, fn, iterations, warmup));
     }
     return results;
   }
